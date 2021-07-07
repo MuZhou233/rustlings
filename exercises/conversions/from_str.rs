@@ -11,8 +11,6 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
-
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
 // 2. Split the given string on the commas present in it
@@ -26,8 +24,29 @@ struct Person {
 impl FromStr for Person {
     type Err = Box<dyn error::Error>;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.len() == 0 {
+            return Err(Box::new(FromStrError))
+        }
+        let v: Vec<&str> = s.split(',').collect();
+        if v.len() != 2 || v[0].len() == 0 || v[1].len() == 0 {
+            Err(Box::new(FromStrError))
+        } else {
+            Ok(Person{
+                name: v[0].to_string(),
+                age: v[1].parse::<usize>()?
+            })
+        }
     }
 }
+
+#[derive(Debug, Clone)]
+struct FromStrError;
+impl std::fmt::Display for FromStrError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "")
+    }
+}
+impl error::Error for FromStrError {}
 
 fn main() {
     let p = "Mark,20".parse::<Person>().unwrap();
